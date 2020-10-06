@@ -7,14 +7,15 @@ use yii\base\Exception;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\web\{Controller, Response};
-use app\models\{SignupForm, LoginForm, ContactForm};
+use app\models\{SignupForm, LoginForm};
+use yii\helpers\Url;
 
 class SiteController extends Controller
 {
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
@@ -46,7 +47,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
@@ -60,13 +61,15 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
-     *
-     * @return string
+     * @return string|Response
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }else{
+            return  $this->redirect(Url::to('site/login'));
+        }
     }
 
     /**
@@ -96,7 +99,7 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
+    public function actionLogout(): Response
     {
         Yii::$app->user->logout();
 

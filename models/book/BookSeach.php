@@ -33,18 +33,26 @@ class BookSeach extends Book
     /**
      * Creates data provider instance with search query applied
      *
+     * @param string $user_id
      * @param array $params
-     *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(string $user_id, array $params)
     {
-        $query = Book::find();
+        $query = Book::find()->where(['user_id'=>$user_id]);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'id' => SORT_DESC,
+                ]
+            ],
         ]);
 
         $this->load($params);

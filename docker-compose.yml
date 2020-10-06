@@ -15,7 +15,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: digitalocean.com/php
     volumes:
       - ./:/var/www/app
     networks:
@@ -29,11 +28,10 @@ services:
       MYSQL_USER: user
     ports:
       - 33061:3306
+    volumes:
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
       - defult
 networks:
   defult:
     driver: bridge
-volumes:
-  db_data:
-    driver: local

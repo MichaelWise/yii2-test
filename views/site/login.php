@@ -5,9 +5,9 @@
 
 /* @var $model app\models\LoginForm */
 
-use yii\helpers\Html;
 use yii\captcha\Captcha;
 use yii\bootstrap\ActiveForm;
+use yii\helpers\{Html, Url};
 
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
@@ -47,7 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php ActiveForm::end(); ?>
 
     <div class="col-lg-offset-1" style="color:#999;">
-        You may login with <strong>admin/admin</strong> or <strong>demo/demo</strong>.<br>
-        To modify the username/password, please check out the code <code>app\models\User::$users</code>.
+        Если вы не регистрировались то пройдите <a href="<?= Url::to(['site/signup']);?>">регистрацию </a>
     </div>
 </div>

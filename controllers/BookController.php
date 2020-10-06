@@ -2,11 +2,13 @@
 
 namespace app\controllers;
 
+use Throwable;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 use yii\web\UploadedFile;
 
 use app\models\book\{Book, BookSeach};
@@ -19,7 +21,7 @@ class BookController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
@@ -44,12 +46,12 @@ class BookController extends Controller
 
     /**
      * Lists all Book models.
-     * @return mixed
+     * @return string
      */
     public function actionIndex()
     {
         $searchModel = new BookSeach();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->user->getId(), Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -65,8 +67,13 @@ class BookController extends Controller
      */
     public function actionView(int $id)
     {
+        $model = $this->findModel($id);
+        if (Yii::$app->user->getId() !== $model->getUserId()) {
+            return $this->redirect('index');
+        }
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 
@@ -101,6 +108,10 @@ class BookController extends Controller
     {
         $model = $this->findModel($id);
 
+        if (Yii::$app->user->getId() !== $model->getUserId()) {
+            return $this->redirect('index');
+        }
+
         if (Yii::$app->request->post() && $this->createForm($model)->save()) {
             return $this->redirect(['view', 'id' => $model->getId()]);
         }
@@ -111,20 +122,21 @@ class BookController extends Controller
     }
 
     /**
-     * Deletes an existing Book model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     *
      * @param int $id
-     * @return \yii\web\Response
+     * @return Response
      * @throws NotFoundHttpException
-     * @throws \Throwable
+     * @throws Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionDelete(int $id)
+    public function actionDelete(int $id) : Response
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
 
-        return $this->redirect(['index']);
+        if (Yii::$app->user->getId() == $model->getUserId()) {
+            $model->delete();
+        }
+
+        return $this->redirect('index');
     }
 
     /**
@@ -134,7 +146,7 @@ class BookController extends Controller
      * @return Book the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel(int $id)
+    protected function findModel(int $id): Book
     {
         if (($model = Book::findOne($id)) !== null) {
             return $model;
@@ -149,7 +161,6 @@ class BookController extends Controller
      */
     private function createForm(Book $model): Book
     {
-
         $oldImage = $model->getImage();
         $model->load(Yii::$app->request->post(), 'Book');
 

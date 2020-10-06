@@ -24,7 +24,11 @@ class SignupForm extends Model
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
             ['username', 'unique', 'targetClass' => User::classname(), 'message' => 'Этот имя пользователя уже занято другим пользователем.'],
-            ['username', 'string', 'min' => 2, 'max' => 255],
+            ['username', 'string', 'min' => 5, 'max' => 255],
+            [
+                'username', 'match', 'pattern' => '/^[a-zA-Z]+$/',
+                'message' => 'Имя пользователя должно быть без пробелов и только английскими буквами'
+            ],
             ['username', 'match',
                 'pattern' => '/^\D/',
                 'message' => 'Телефона, должно быть в формате 8(XXX)XXX-XX-XX'

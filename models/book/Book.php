@@ -2,14 +2,14 @@
 
 namespace app\models\book;
 
-use Intervention\Image\ImageManager;
 use Yii;
-use yii\db\Expression;
-use yii\db\ActiveRecord;
+use yii\web\UploadedFile;
 use yii\behaviors\TimestampBehavior;
+use yii\db\{Expression, ActiveRecord};
+
+use Intervention\Image\ImageManager;
 
 use app\models\User;
-use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "books".
@@ -25,7 +25,7 @@ use yii\web\UploadedFile;
  *
  * @property User $user
  */
-class Book extends \yii\db\ActiveRecord
+class Book extends ActiveRecord
 {
     const PATTERN_PHONE = '/^(8|7|\+7)?[\-\(]?([389][0-9]{2})[\-\)]?(\d{3})[\-]?(\d{2})[\-]?(\d{2})$/';
 
@@ -60,8 +60,8 @@ class Book extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'phone' => 'Phone',
-            'firstname' => 'Firstname',
+            'phone' => 'Phone *',
+            'firstname' => 'Firstname *',
             'lastname' => 'Lastname',
             'image' => 'Image',
             'created_at' => 'Created At',
@@ -75,7 +75,7 @@ class Book extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['phone'], 'unique'],
+            [['phone', 'user_id'], 'unique', 'targetAttribute' => ['phone', 'user_id']],
             [['phone', 'firstname'], 'required'],
             [['phone', 'firstname', 'lastname'], 'string', 'max' => 255],
             ['phone', 'match',

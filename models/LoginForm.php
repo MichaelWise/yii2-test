@@ -29,8 +29,15 @@ class LoginForm extends Model
         return [
             // username and password are both required
             [['username', 'password'], 'required'],
+            //username pattern
+            [
+                'username', 'match', 'pattern' => '/^[a-zA-Z]+$/',
+                'message' => 'Имя пользователя должно быть без пробелов и только английскими буквами'
+            ],
+
             // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
+            ['password', 'string', 'min' => 5, 'max' => 255],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
             // verifyCode needs to be entered correctly
