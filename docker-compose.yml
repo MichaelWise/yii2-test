@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www/app
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/logs:/var/log/nginx/
+    networks:
+      - defult
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: digitalocean.com/php
+    volumes:
+      - ./:/var/www/app
+    networks:
+      - defult
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 123123
+      MYSQL_DATABASE: yii2-test
+      MYSQL_PASSWORD: 123
+      MYSQL_USER: user
+    ports:
+      - 33061:3306
+    networks:
+      - defult
+networks:
+  defult:
+    driver: bridge
+volumes:
+  db_data:
+    driver: local
