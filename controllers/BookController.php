@@ -3,19 +3,13 @@
 namespace app\controllers;
 
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 
-use app\models\book\{Book,
-    BookAbstractForm,
-    BookFormAbstract,
-    BookFormInterface,
-    BookSeach,
-    BookCreateForm,
-    BookUpdateForm
-};
+use app\models\book\{Book, BookSeach};
 
 /**
  * BookController implements the CRUD actions for Book model.
@@ -28,6 +22,17 @@ class BookController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'create', 'update', 'view', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['index', 'create', 'update', 'view', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
